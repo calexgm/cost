@@ -33,11 +33,42 @@ class ProductController extends Controller
         return view('inventory.products.index', compact('products', 'categories'));
     }
 
+    public function exist(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $code = $request->code;
+
+            $prod = Product::where('code_bar', $code)->first();
+            
+            if ($prod) {
+                DB::commit();
+                return response()->json([
+                    'response' => true,
+                    'data' => $prod
+                ]);
+            }else{
+                DB::commit();
+                return response()->json([
+                    'response' => true,
+                ]);
+            }
+        } catch (Exception $th) {
+            DB::rollBack();
+            return response()->json([
+                'response' => false,
+                'data' => $th
+            ]);
+        }
+    }
+
     public function store(Request $request)
     {
         try {
             DB::beginTransaction();
             $product = Product::create([
+                'code_bar' => $request->codebar,
                 'name' => $request->name,
                 'description' => $request->descripcion,
                 'product_category_id' => $request->categoria,
@@ -145,6 +176,7 @@ class ProductController extends Controller
             $date_update = Carbon::now();
             $product = Product::where('id',$request->id)
             ->update([
+                'code_bar' => $request->code,
                 'name' => $request->name,
                 'description' => $request->descripcion,
                 'product_category_id' => $request->categoria,
@@ -155,7 +187,7 @@ class ProductController extends Controller
 
             $file = $request->file('photo');
             $pro = Product::find($request->id);
-            if ($file) {
+            if ($file != "") {
                 $extension = $file->getClientOriginalExtension();
                 $name = Str::random(20);
                 $fileName = $name . '.' . $extension;
@@ -168,9 +200,6 @@ class ProductController extends Controller
                 $pro->image = $fileName;
                 $saved = $pro->save();
             }else{
-                $fileName = 'producto.png';
-                $pro->image = $fileName;
-                $saved = $pro->save();
             }
             DB::commit();
             return response()->json([

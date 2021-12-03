@@ -10,9 +10,8 @@ class Product extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'description','product_category_id', 'price', 'stock', 'status',
+        'name', 'description','code_bar','product_category_id', 'price', 'stock', 'status',
         
-        'stock_defective'
     ];
 
     public function category()

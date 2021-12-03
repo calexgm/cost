@@ -31,7 +31,7 @@
     <!-- Datatables -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
   
-
+    <script src="https://cdn.jsdelivr.net/npm/scandit-sdk@5.x"></script>
 </head>
 
 <body class="white-content {{ $class ?? '' }}">

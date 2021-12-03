@@ -1,6 +1,5 @@
 @if ($errors->has($field))
-    <script>
-        var error = "{{ $errors->first($field) }}";
-        alertify.error(error); 
-    </script>
+        <script>
+            alertify.error('Esta cuanta se encuentra inactiva, comuníquese  con su administrador.'); 
+        </script>
 @endif

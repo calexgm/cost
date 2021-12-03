@@ -18,7 +18,7 @@
             <li id="dashboard">
                 <a href="{{ route('home') }}">
                     <i class="nc-icon nc-bank"></i>
-                    <p>Dashboard</p>
+                    <p>Inicio</p>
                 </a>
             </li>
             @if (auth()->user()->rol_id == 1)

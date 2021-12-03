@@ -2,6 +2,8 @@
 
 @section('content')
     <div class="content">
+        
+        
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -55,13 +57,17 @@
                                             <td>{{ $sale->products->count() }}</td>
                                             <td>{{ $sale->products->sum('qty') }}</td>
                                             <td>
-                                                {{ format_money($sale->total_amount) }}
+                                                ${{ number_format($sale->total_amount) }}
                                             </td>
                                             <td>
-                                                @if (!$sale->finalized_at)
+                                                @if (!$sale->finalized_at) 
                                                     <span class="text-danger">EN PROCESO</span>
                                                 @else
-                                                    <span class="text-success">FINALIZADA</span>
+                                                    @if($mifecha < $sale->finalized_at)
+                                                        <span class="text-warning">EN ESPERA</span>
+                                                    @else
+                                                        <span class="text-success">FINALIZADA</span>
+                                                    @endif
                                                 @endif
                                             </td>
                                             <td class="text-right">
@@ -92,10 +98,7 @@
             $("#users").removeClass("active");
             $("#repors").removeClass("active");
         });
-    </script>
 
-
-    <script>
         $('.modal_add_sales').click(function() {
             $('.modal_add_sales').prop('disabled', true);
             $('.modal_add_sales').empty();
@@ -103,7 +106,7 @@
                 '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Cargando...'
             );
 
-            document.form_create.submit().submit();
+            document.form_create.submit();
         });
     </script>
 @endpush

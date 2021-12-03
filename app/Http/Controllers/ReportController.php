@@ -49,10 +49,12 @@ class ReportController extends Controller
         ->join('sold_products','sales.id','=','sold_products.sale_id')
         ->join('products','sold_products.product_id','=','products.id')
         ->where('user_id', $user->id)
+        ->where('sales.finalized_at' ,'!=',null)
         ->select('products.name','sold_products.qty')
         ->orderBY('qty', 'desc')
         ->limit(5)
         ->get();
+        
     return response()->json([
         'response' => true,
         'data' => $product

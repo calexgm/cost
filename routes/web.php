@@ -44,6 +44,7 @@ Route::group(['middleware' => 'auth'], function () {
         
         //Rutas de productos
         Route::get('/products', 'ProductController@index')->name('products');
+        Route::post('/exist', 'ProductController@exist')->name('exist');
         Route::match(['put', 'patch'], 'edit_product_modal', ['as' => 'edit.product.modal', 'uses' => 'ProductController@edit_product']);
         Route::match(['put', 'patch','post'], 'update_product', ['as' => 'update.product', 'uses' => 'ProductController@update']);
         Route::match(['put', 'patch'], 'status_product', ['as' => 'status.product', 'uses' => 'ProductController@status_product']);
@@ -62,6 +63,8 @@ Route::group(['middleware' => 'auth'], function () {
     //Rutas de ventas
     Route::get('/ventas', 'SaleController@index')->name('ventas');
     Route::post('/add_p', 'SaleController@store_product')->name('add_p');
+    Route::post('/less_more', 'SaleController@less_more')->name('less_more');
+    Route::post('/more', 'SaleController@more')->name('more');
     Route::post('/delete_p_sale', 'SaleController@destroyproduct')->name('delete_p_sale');
     Route::post('/get_edit_product', 'SaleController@get_edit_product')->name('get_edit_product');
     Route::post('/get_edit_product', 'SaleController@get_edit_product')->name('get_edit_product');
@@ -70,6 +73,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/finalize', 'SaleController@finalize')->name('finalize');
     Route::get('sales/{sale}', ['as' => 'sales.show', 'uses' => 'SaleController@show']);
     Route::post('/prods', 'SaleController@get_p')->name('prods');
+    Route::post('/add_scann', 'SaleController@scann')->name('add_scann');
     
 
 

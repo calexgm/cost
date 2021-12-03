@@ -15,13 +15,31 @@ use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
-    
     public function index()
     {
-        $sales = Sale::latest()->get();
-
-        return view('sales.index', compact('sales'));
-
+        $id = Auth::user()->id;
+        $rol_id = Auth::user()->rol_id;
+        if ($rol_id == 2) {
+            $sales = Sale::leftjoin('sold_products','sales.id','=','sold_products.sale_id')
+            ->select('sales.id','sales.user_id',DB::raw('DATE_ADD(sales.finalized_at, INTERVAL 30 MINUTE) as finalized_at')
+            ,'sales.created_at','sales.updated_at', DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->where('sales.user_id', $id)
+            ->groupBy('sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
+            ,'sales.created_at','sales.updated_at')
+            ->orderBy('created_at', 'desc')
+            ->get();  
+        }else {
+            $sales = Sale::leftjoin('sold_products','sales.id','=','sold_products.sale_id')
+            ->select('sales.id','sales.user_id',DB::raw('DATE_ADD(sales.finalized_at, INTERVAL 30 MINUTE) as finalized_at')
+            ,'sales.created_at','sales.updated_at', DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->groupBy('sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
+            ,'sales.created_at','sales.updated_at')
+            ->orderBy('created_at', 'desc')
+            ->get();  
+        }
+        
+        $mifecha= date('Y-m-d H:i:s'); 
+        return view('sales.index', compact('sales','mifecha' ));
     }
 
     
@@ -56,7 +74,14 @@ class SaleController extends Controller
         ->select('products.name as product','pc.name as category', 'products.price',
         'products.stock','products.status','products.id','products.description', 'products.image')
         ->get();
-        return view('sales.show', ['sale' => $sale, 'products'=> $products]);
+        //detalle
+        $sales = Sale::select(DB::raw('DATE_ADD(sales.finalized_at, INTERVAL 30 MINUTE) as finalized_at'))
+        ->where('sales.id', $sale->id)
+        ->first();
+        //FECHA ACTIAL 
+        $mifecha= date('Y-m-d H:i:s'); 
+        $total_amount = SoldProduct::where('sale_id', $sale->id)->sum('total_amount');
+        return view('sales.show', ['mifecha' => $mifecha,'sales' => $sales,'sale' => $sale, 'products'=> $products, 'total_amount' => $total_amount]);
     }
 
     public function get_p()
@@ -96,8 +121,6 @@ class SaleController extends Controller
 
             
             foreach ($sale as $key => $value) {
-               $prod = Product::where('id', $value->product_id)
-               ->decrement('stock',$value->qty);
                $total += $value->total_amount;
             }
             $s = Sale::where('id', $request->id)
@@ -137,58 +160,221 @@ class SaleController extends Controller
 
         return back()->withStatus('The sale has been successfully completed.');
     }
-
-    public function storeproduct(Request $request, Sale $sale, SoldProduct $soldProduct)
-    {
-        $request->merge(['total_amount' => $request->get('price') * $request->get('qty')]);
-
-        $soldProduct->create($request->all());
-
-        return redirect()
-            ->route('sales.show', ['sale' => $sale])
-            ->withStatus('Product successfully registered.');
-    }
-    //miio
+   
     public function store_product(Request $request)
     {
         try {
             DB::beginTransaction();
 
-            $price = Product::where('id', $request->id)->first('price');
-            $total = $price->price * $request->cantidad;
-            $al_sale = SoldProduct::where('sale_id', $request->sale)
-            ->where('product_id', $request->id)
-            ->first();
-
-            if ($al_sale) {
-                $c = $al_sale->qty + $request->cantidad;
-                $total_a = $al_sale->total_amount + $total;
-                $sold = SoldProduct::where('sale_id', $request->sale)
+            $product = Product::where('id', $request->id)->first();
+            $calculo_cantidad = $product->stock - $request->count;
+            if ($calculo_cantidad >= 0) {
+                $total = $product->price * $request->count;
+                $al_sale = SoldProduct::where('sale_id', $request->sale)
                 ->where('product_id', $request->id)
-                ->update([
-                    'qty' => $c,
-                    'price' => $price->price,
-                    'total_amount' => $total_a,
-                ]);
+                ->first();
+                if ($al_sale) {
+                    $c = $al_sale->qty + $request->count;
+                    $total_a = $al_sale->total_amount + $total;
+                    $sold = SoldProduct::where('sale_id', $request->sale)
+                    ->where('product_id', $request->id)
+                    ->update([
+                        'qty' => $c,
+                        'price' => $product->price,
+                        'total_amount' => $total_a,
+                    ]);
+                    
+                }else{
+                    $sold = SoldProduct::create([
+                        'sale_id' => $request->sale,
+                        'product_id' => $request->id,
+                        'qty' => $request->count,
+                        'price' => $product->price,
+                        'total_amount' => $total,
+                    ]);
+                    
+                    
+                }
+                $prod = Product::find($request->id);
+                $prod->stock -= $request->count;
+                $prod->save();
+            DB::commit();
             }else{
-                $sold = SoldProduct::create([
-                    'sale_id' => $request->sale,
-                    'product_id' => $request->id,
-                    'qty' => $request->cantidad,
-                    'price' => $price->price,
-                    'total_amount' => $total,
+                return response()->json([
+                    'response' => false,
+                    'msg' => 'La cantidad solicitada no esta disponible.',
                 ]);
             }
-            DB::commit();
+            $data = SoldProduct::join('products','sold_products.product_id','=','products.id')
+            ->join('product_categories','products.product_category_id','=','product_categories.id')
+            ->where('sale_id', $request->sale)
+            ->select('product_categories.name as cate', 'products.name', 'products.id', 
+            'sold_products.price', 'sold_products.qty','sold_products.total_amount','sold_products.created_at')
+            ->get();
+            $detail = SoldProduct::where('sale_id', $request->sale)
+            ->select(DB::raw('count(product_id) as prods , SUM(qty) as qty, SUM(total_amount)as total'))
+            ->where('sale_id', $request->sale)
+            ->first();
             return response()->json([
                 'response' => true,
+                'data' => $data,
+                'detail' => $detail,
+                'msg' => 'Producto añadido con exito.'
                
             ]);
         } catch (Exception $th) {
             DB::rollBack();
+            return $th;
             return response()->json([
                 'response' => false,
-                'data' => $th
+                'msg' => $th
+            ]);
+        }
+    }
+    public function less_more(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $product = Product::where('id', $request->id)->first();
+            $calculo_cantidad = $product->stock - $request->count;
+            if ($calculo_cantidad >= 0) {
+                $total = $product->price * $request->count;
+                $al_sale = SoldProduct::where('sale_id', $request->sale)
+                ->where('product_id', $request->id)
+                ->first();
+                if ($al_sale) {
+                    $c = $al_sale->qty + $request->count;
+                    if ($c == 0) {
+                        $sold = SoldProduct::where('sale_id', $request->sale)
+                        ->where('product_id', $request->id)
+                        ->delete();
+                    }else{
+                        $total_a = $al_sale->total_amount + $total;
+                        $sold = SoldProduct::where('sale_id', $request->sale)
+                        ->where('product_id', $request->id)
+                        ->update([
+                            'qty' => $c,
+                            'price' => $product->price,
+                            'total_amount' => $total_a,
+                        ]);
+                    }
+                }
+                $prod = Product::find($request->id);
+                $prod->stock -= $request->count;
+                $prod->save();
+            DB::commit();
+            }else{
+                return response()->json([
+                    'response' => false,
+                    'msg' => 'La cantidad solicitada no esta disponible.',
+                ]);
+            }
+            $data = SoldProduct::join('products','sold_products.product_id','=','products.id')
+            ->join('product_categories','products.product_category_id','=','product_categories.id')
+            ->where('sale_id', $request->sale)
+            ->select('product_categories.name as cate', 'products.name', 'products.id', 
+            'sold_products.price', 'sold_products.qty','sold_products.total_amount','sold_products.created_at')
+            ->get();
+            $detail = SoldProduct::where('sale_id', $request->sale)
+            ->select(DB::raw('count(product_id) as prods , SUM(qty) as qty, SUM(total_amount)as total'))
+            ->where('sale_id', $request->sale)
+            ->first();
+            return response()->json([
+                'response' => true,
+                'data' => $data,
+                'detail' => $detail,
+                'msg' => 'Cantidad modificada con exito.'
+               
+            ]);
+        } catch (Exception $th) {
+            DB::rollBack();
+            return $th;
+            return response()->json([
+                'response' => false,
+                'msg' => $th
+            ]);
+        }
+    }
+    public function scann(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $product = Product::where('code_bar', $request->id)->first();
+            if ($product) {
+                $calculo_cantidad = $product->stock - 1;
+                if ($calculo_cantidad >= 0) {
+                    $total = $product->price * 1;
+                    $al_sale = SoldProduct::where('sale_id', $request->sale)
+                    ->where('product_id', $product->id)
+                    ->first();
+                    if ($al_sale) {
+                        $c = $al_sale->qty + 1;
+                        $total_a = $al_sale->total_amount + $total;
+                        $sold = SoldProduct::where('sale_id', $request->sale)
+                        ->where('product_id', $product->id)
+                        ->update([
+                            'qty' => $c,
+                            'price' => $product->price,
+                            'total_amount' => $total_a,
+                        ]);
+                        
+                    }else{
+                        $sold = SoldProduct::create([
+                            'sale_id' => $request->sale,
+                            'product_id' => $product->id,
+                            'qty' => 1,
+                            'price' => $product->price,
+                            'total_amount' => $total,
+                        ]);
+                        
+                        
+                    }
+                    $prod = Product::find($product->id);
+                    $prod->stock -= $request->count;
+                    $prod->save();
+
+                    $s = Sale::where('id', $request->sale)
+                        ->update([
+                        'finalized_at' => null,
+                    ]);
+                DB::commit();
+                }else{
+                    return response()->json([
+                        'response' => false,
+                        'msg' => 'La cantidad solicitada no esta disponible.',
+                    ]);
+                }
+                $data = SoldProduct::join('products','sold_products.product_id','=','products.id')
+                ->join('product_categories','products.product_category_id','=','product_categories.id')
+                ->where('sale_id', $request->sale)
+                ->select('product_categories.name as cate', 'products.name', 'products.id', 
+                'sold_products.price', 'sold_products.qty','sold_products.total_amount','sold_products.created_at')
+                ->get();
+                $detail = SoldProduct::where('sale_id', $request->sale)
+                ->select(DB::raw('count(product_id) as prods , SUM(qty) as qty, SUM(total_amount)as total'))
+                ->where('sale_id', $request->sale)
+                ->first();
+                return response()->json([
+                    'response' => true,
+                    'data' => $data,
+                    'detail' => $detail,
+                    'msg' => 'Producto añadido con exito.'
+                   
+                ]);
+            }else {
+                return response()->json([
+                    'response' => false,
+                    'msg' => 'Producto no encontrado.',
+                ]);
+            }
+        } catch (Exception $th) {
+            DB::rollBack();
+            return $th;
+            return response()->json([
+                'response' => false,
+                'msg' => $th
             ]);
         }
     }
@@ -232,15 +418,26 @@ class SaleController extends Controller
     public function destroyproduct(Request $request)
     {
         try {
+
             DB::beginTransaction();
-
-            $delete = SoldProduct::where('sale_id', $request->sale)
+            $prod_sold = SoldProduct::where('sale_id', $request->sale)
             ->where('product_id', $request->id)
-            ->delete();
+            ->first();
 
+            $prod = Product::find($request->id);
+            $prod->stock += $prod_sold->qty;
+            $prod->save();
+            
+            $prod_sold->delete();
+            $detail = SoldProduct::where('sale_id', $request->sale)
+            ->select(DB::raw('count(product_id) as prods , SUM(qty) as qty, SUM(total_amount)as total'))
+            ->where('sale_id', $request->sale)
+            ->first();
             DB::commit();
             return response()->json([
                 'response' => true,
+                'detail' => $detail,
+                'id' => $prod->id,
                
             ]);
         } catch (Exception $th) {
@@ -273,71 +470,5 @@ class SaleController extends Controller
                 'data' => $th
             ]);
         }
-    }
-
-    public function addtransaction(Sale $sale)
-    {
-        $payment_methods = PaymentMethod::all();
-
-        return view('sales.addtransaction', compact('sale', 'payment_methods'));
-    }
-
-    public function storetransaction(Request $request, Sale $sale, Transaction $transaction)
-    {
-        switch($request->all()['type']) {
-            case 'income':
-                $request->merge(['title' => 'Payment Received from Sale ID: ' . $request->get('sale_id')]);
-                break;
-
-            case 'expense':
-                $request->merge(['title' => 'Sale Return Payment ID: ' . $request->all('sale_id')]);
-
-                if($request->get('amount') > 0) {
-                    $request->merge(['amount' => (float) $request->get('amount') * (-1) ]);
-                }
-                break;
-        }
-
-        $transaction->create($request->all());
-
-        return redirect()
-            ->route('sales.show', compact('sale'))
-            ->withStatus('Successfully registered transaction.');
-    }
-
-    public function edittransaction(Sale $sale, Transaction $transaction)
-    {
-        $payment_methods = PaymentMethod::all();
-
-        return view('sales.edittransaction', compact('sale', 'transaction', 'payment_methods'));
-    }
-
-    public function updatetransaction(Request $request, Sale $sale, Transaction $transaction)
-    {
-        switch($request->get('type')) {
-            case 'income':
-                $request->merge(['title' => 'Payment Received from Sale ID: '. $request->get('sale_id')]);
-                break;
-
-            case 'expense':
-                $request->merge(['title' => 'Sale Return Payment ID: '. $request->get('sale_id')]);
-
-                if($request->get('amount') > 0) {
-                    $request->merge(['amount' => (float) $request->get('amount') * (-1)]);
-                }
-                break;
-        }
-        $transaction->update($request->all());
-
-        return redirect()
-            ->route('sales.show', compact('sale'))
-            ->withStatus('Successfully modified transaction.');
-    }
-
-    public function destroytransaction(Sale $sale, Transaction $transaction)
-    {
-        $transaction->delete();
-
-        return back()->withStatus('Transaction deleted successfully.');
     }
 }
