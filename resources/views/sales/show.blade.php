@@ -15,7 +15,7 @@
                                     class="btn btn-primary btn-round ">VOLVER
                                 </a>
                             </div>
-                            @if (!$sales->finalized_at || $mifecha < $sales->finalized_at)
+                            @if (!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)
                                 <div class="col text-right">
                                         <button type="button" data-id="{{ $sale->id }}"
                                             class="btn btn-primary btn-round btn_finalice">FINALIZAR VENTA
@@ -85,7 +85,7 @@
                             <div class="col-lg-6">
                             </div>
                             <div class="col-lg-6 text-right">
-                                @if (!$sales->finalized_at || $mifecha < $sales->finalized_at)
+                                @if (!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)
                                     <button class="btn btn-primary btn-round modal_add_open" type="button"
                                         data-id="{{ $sale->id }}"><i class="fas fa-plus-circle"></i>
                                         AGREGAR
@@ -127,14 +127,14 @@
                                             <td>{{ $sold_product->product->name }}</td>
                                             <td>{{ $sold_product->product->category->name }}</td>
                                             <td>
-                                                @if (!$sales->finalized_at || $mifecha < $sales->finalized_at)
+                                                @if (!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)
                                                 <button data-sale="{{ $sale->id }}" type="button"
                                                     data-id="{{ $sold_product->product->id }}"
                                                     class="btn btn-danger btn-round btn_less"> <i
                                                         class="fas fa-minus"></i> </button>
                                                         @endif        
                                                 {{ $sold_product->qty }}
-                                                @if (!$sales->finalized_at || $mifecha < $sales->finalized_at)
+                                                @if (!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)
                                                 <button data-sale="{{ $sale->id }}" type="button"
                                                     data-id="{{ $sold_product->product->id }}"
                                                     class="btn btn-success btn-round btn_more"> <i
@@ -144,7 +144,7 @@
                                             <td>{{ number_format($sold_product->price) }}</td>
                                             <td>{{ number_format($sold_product->total_amount) }}</td>
                                             <td class="td-actions text-right">
-                                                @if (!$sales->finalized_at || $mifecha < $sales->finalized_at)
+                                                @if (!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)
                                                     <button type="button" data-sale="{{ $sale->id }}"
                                                         data-id="{{ $sold_product->product->id }}"
                                                         class="btn btn-danger btn-round btn_delete_product">
@@ -191,7 +191,7 @@
         </div>
     </div>
     <!-- Modal Escan -->
-    @if(!$sales->finalized_at || $mifecha < $sales->finalized_at)
+    @if(!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)
     <div class="modal fade" id="openScann" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -716,7 +716,7 @@
                                 '<td>' + new Intl.NumberFormat("de-DE").format(prodata.price) + '</td>' +
                                 '<td>' + new Intl.NumberFormat("de-DE").format(prodata.total_amount) + '</td>' +
                                 '<td class="td-actions text-right">'+
-                                '@if (!$sales->finalized_at || $mifecha < $sales->finalized_at)'+
+                                '@if (!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)'+
                                     '<button type="button" data-sale="{{ $sale->id }}" data-id="'+prodata.id+'"'+
                                         ' class="btn btn-danger btn-round btn_delete_product"><i '+
                                             'class="far fa-trash-alt"></i>'+
@@ -819,7 +819,7 @@
                                 '<td>' + new Intl.NumberFormat("de-DE").format(prodata.price) + '</td>' +
                                 '<td>' + new Intl.NumberFormat("de-DE").format(prodata.total_amount) + '</td>' +
                                 '<td class="td-actions text-right">'+
-                                '@if (!$sales->finalized_at || $mifecha < $sales->finalized_at)'+
+                                '@if (!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)'+
                                     '<button type="button" data-sale="{{ $sale->id }}" data-id="'+prodata.id+'"'+
                                         ' class="btn btn-danger btn-round btn_delete_product"><i '+
                                             'class="far fa-trash-alt"></i>'+
@@ -923,7 +923,7 @@
                                 '<td>' + new Intl.NumberFormat("de-DE").format(prodata.price) + '</td>' +
                                 '<td>' + new Intl.NumberFormat("de-DE").format(prodata.total_amount) + '</td>' +
                                 '<td class="td-actions text-right">'+
-                                '@if (!$sales->finalized_at || $mifecha < $sales->finalized_at)'+
+                                '@if (!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)'+
                                     '<button type="button" data-sale="{{ $sale->id }}" data-id="'+prodata.id+'"'+
                                         ' class="btn btn-danger btn-round btn_delete_product"><i '+
                                             'class="far fa-trash-alt"></i>'+
