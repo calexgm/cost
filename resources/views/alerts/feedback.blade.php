@@ -1,5 +1,5 @@
 @if ($errors->has($field))
         <script>
-            alertify.error('Esta cuanta se encuentra inactiva, comuníquese  con su administrador.'); 
+            alertify.error('Usuario o contraseña incorrectos.'); 
         </script>
 @endif

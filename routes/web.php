@@ -64,12 +64,17 @@ Route::group(['middleware' => 'auth'], function () {
         
         Route::get('/reports', 'ReportController@index')->name('reports');
         Route::post('/get_sales_month', 'ReportController@get_sales_month')->name('get_sales_month');
-        Route::post('/more_product', 'ReportController@more_product')->name('more_product');
         Route::post('/sales_users', 'ReportController@sales_users')->name('sales_users');
         Route::post('/year_search', 'ReportController@year_search')->name('year_search');
+        Route::post('/get_search', 'ReportController@get_search')->name('get_search');
+        Route::post('/quincena_search', 'ReportController@quincena_search')->name('quincena_search');
         
         
     });
+
+    //Reportes
+    Route::post('/more_product', 'ReportController@more_product')->name('more_product');
+
     //Rutas de ventas
     Route::get('/ventas', 'SaleController@index')->name('ventas');
     Route::post('/add_p', 'SaleController@store_product')->name('add_p');

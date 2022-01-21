@@ -17,7 +17,7 @@
                                         <option value="">Seleccione un tipo</option>
                                         <option value="1">Mensual</option>
                                         <option value="2">Quincenal</option>
-                                        <option value="3">Semanal</option>
+                                        <!-- <option value="3">Semanal</option> -->
                                     </select>
                             </div>
                         </div>
@@ -40,10 +40,22 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row" id="Quincenal">
+                    <div class="col-6 pl-4 pr-4" style="display: noen;">
+                            <div class="form-group">
+                                <label>Quincena</label>
+                                <select id="quincena_reporte" class="form-control">
+                                <option value="">Seleccione una quincena</option>
+                                <option value="1">Primera</option>
+                                <option value="2">Segunda</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col pl-4 pr-4">
                             <div class="table-responsive">
-                                <table class="table table-striped table-style" id="tblUsers">
+                                <table class="table table-striped table-style" id="tbl_reports">
                                     <thead class="">
                                         <th>
                                             FECHA
@@ -60,22 +72,9 @@
                                         <th>
                                             MONTO TOTAL
                                         </th>
-                                        <th>
-                                            ESTADO
-                                        </th>
-                                        <th class="text-right">
-
-                                        </th>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>1</td>
-                                            <td>1</td>
-                                            <td>1</td>
-                                            <td>1</td>
-                                            <td>1</td>
-                                        </tr>
+                                        
                                     </tbody>
                                 </table>
                             </div>
@@ -113,15 +112,21 @@
                 }
                 $('#button').empty();
                 $('#button').append('<button class="btn btn-success btn-round year_search">BUSCAR</button>');
-
                 $('#Mensual').show();
                 $('#Quincenal').hide();
                 $('#Semanal').hide();
             } else if (tipo == 2) {
+                let currentTime = new Date();
+                let year_actual = currentTime.getFullYear()
+                $('#year_reporte').empty();
+                $('#year_reporte').append('<option value="">Seleccione un año</option>');
+                for (let index = 2021; index <= year_actual; index++) {
+                    $('#year_reporte').append('<option value="' + index + '">' + index + '</option>');
+                }
                 $('#button').empty();
                 $('#button').append('<button class="btn btn-success btn-round mes_search">BUSCAR</button>');
 
-                $('#Mensual').hide();
+                $('#Mensual').show();
                 $('#Quincenal').show();
                 $('#Semanal').hide();
             } else if (tipo == 3) {
@@ -198,9 +203,8 @@
         $(document).on('click', '.year_search', function() {
             let year = $('#year_reporte').val();
             let mes = $('#mes_reporte').val();
-
             if (year == "") {
-                alertify.error('El campo año es requerido.');
+                alertify.error('Seleccione un año');
             } else {
                 $.ajax({
                     url: "{{ route('year_search')}}",
@@ -209,13 +213,15 @@
                         mes: mes,
                     },
                     type: 'post',
-                    processData: false,
-                    contentType: false,
                     beforeSend: function() {
                         $('.year_search').prop('disabled', true);
                     },
                     success: function(response) {
-                        if (response.response) {} else {
+                        if (response.response) {
+                            datatable.clear().draw();
+                            addRowDatable(response.data);
+                            $('.year_search').prop('disabled', false);
+                        } else {
                             $('.year_search').prop('disabled', false);
                             alertify.error('Ocurrio un error.');
                         }
@@ -229,20 +235,125 @@
             }
         });
 
-        function addRowDatableToros(data) {
-            data.forEach(r => {
-                datatable_toros.row.add([
-                    '',
-                    r.NOMBRE,
-                    r.RAZA_VACA,
+        $.ajax({
+            url: "{{ route('get_search')}}",
+            data: {
+            },
+            type: 'post',
+            processData: false,
+            contentType: false,
+            beforeSend: function() {
+                $('.year_search').prop('disabled', true);
+            },
+            success: function(response) {
+                if (response.response) {
+                    addRowDatable(response.data);
+                } else {
+                    $('.year_search').prop('disabled', false);
+                    alertify.error('Ocurrio un error.');
+                }
+            },
+            error: function(x, xs, xt) {
+                console.log(x);
+                alertify.error('Ocurrio un error.');
+                $('..year_search').prop('disabled', false);
+            }
+        });
+
+        function addRowDatable(data) {
+                data.forEach(r => {
+                let date = new Date(r.finalized_at);
+                const formatDate = (date) => {
+                    let formatted_date = date.getDate() + "-" + (date
+                            .getMonth() + 1) +
+                        "-" + date.getFullYear()
+                    return formatted_date;
+                }
+                datatable.row.add([
+                    formatDate(date),
+                    r.name,
+                    r.count,
+                    r.sum,
+                    '$ '+new Intl.NumberFormat("de-DE").format(r.total_amount),
                 ]).draw(false);
             });
             $(".loader").fadeOut("slow");
 
         };
+        let idioma = {
+                "decimal": "",
+                "emptyTable": "No hay información",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+                "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+                "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ Entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "Sin resultados encontrados",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Ultimo",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            };
+
+            let datatable = $('#tbl_reports').DataTable({
+                responsive: true,
+                destroy: true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'excelHtml5',
+                    'pdfHtml5'
+                ],
+                language: idioma,
+            });
 
         //BUSCAR POR MES
-        $(document).on('click', '.mes_search', function() {});
+        $(document).on('click', '.mes_search', function() {
+            let year = $('#year_reporte').val();
+            let mes = $('#mes_reporte').val();
+            let quincena = $('#quincena_reporte').val();
+            
+            if (year == "") {
+                alertify.error('Seleccione un año');
+            } else if (mes == "") {
+                alertify.error('Seleccione un mes');
+            } else if (quincena == "") {
+                alertify.error('Seleccione una quincena');
+            } else {
+                $.ajax({
+                    url: "{{ route('quincena_search')}}",
+                    data: {
+                        year: year,
+                        mes: mes,
+                        quincena: quincena,
+                    },
+                    type: 'post',
+                    beforeSend: function() {
+                        $('.year_search').prop('disabled', true);
+                    },
+                    success: function(response) {
+                        if (response.response) {
+                            datatable.clear().draw();
+                            addRowDatable(response.data);
+                            $('.year_search').prop('disabled', false);
+                        } else {
+                            $('.year_search').prop('disabled', false);
+                            alertify.error('Ocurrio un error.');
+                        }
+                    },
+                    error: function(x, xs, xt) {
+                        console.log(x);
+                        alertify.error('Ocurrio un error.');
+                        $('..year_search').prop('disabled', false);
+                    }
+                });
+            }
+        });
 
         //BUSCAR POR SEMANA
         $(document).on('click', '.semana_search', function() {});

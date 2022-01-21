@@ -48,7 +48,6 @@
                 @include('alerts.feedback', ['field' => 'email'])
                 <input type="password" name="password" placeholder="Ingrese su contraseña" />
                 @include('alerts.feedback', ['field' => 'password'])
-                <a href="#">¿Olvidaste tu contraseña?</a>
                 <button>Iniciar sesion</button>
             </form>
         </div>

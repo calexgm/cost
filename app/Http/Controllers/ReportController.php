@@ -38,18 +38,14 @@ class ReportController extends Controller
 
         
     }
+
     public function more_product(){
 
-        $user = Auth::user();
-        $searchshop = DB::table('shop_user')->where('user_id', $user->id)->first('shop_id');
-        $product = Product::join('product_categories as pc','products.product_category_id','=','pc.id')
-        ->where('pc.shop_id', $searchshop->shop_id)->get();
-
+        
         $product = DB::table('users')
         ->join('sales','sales.user_id','=','users.id')
         ->join('sold_products','sales.id','=','sold_products.sale_id')
         ->join('products','sold_products.product_id','=','products.id')
-        ->where('user_id', $user->id)
         ->where('sales.finalized_at' ,'!=',null)
         ->select('products.name','sold_products.qty')
         ->orderBY('qty', 'desc')
@@ -80,31 +76,81 @@ class ReportController extends Controller
         ]);
     } 
 
-    public function year_search(){
+    public function year_search(Request $request){
         try {
-            $id = Auth::user()->id;
-            $rol_id = Auth::user()->rol_id;
-            $day = date('d');
-            if ($rol_id == 2) {
-                $sales = Sale::leftjoin('sold_products','sales.id','=','sold_products.sale_id')
-                ->select('sales.id','sales.user_id',DB::raw('DATE_ADD(sales.finalized_at, INTERVAL 30 MINUTE) as finalized_at')
-                ,'sales.created_at','sales.updated_at', DB::raw('sum(sold_products.total_amount) as total_amount'))
-                ->where('sales.user_id', $id)
-                ->groupBy('sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
-                ,'sales.created_at','sales.updated_at')
-                ->orderBy('created_at', 'desc')
-                ->get();  
-            }else {
-                $sales = Sale::leftjoin('sold_products','sales.id','=','sold_products.sale_id')
-                ->select('sales.finalized_at as final_table','sales.id','sales.user_id',DB::raw('DATE_ADD(sales.finalized_at, INTERVAL 30 MINUTE) as finalized_at')
-                ,'sales.created_at','sales.updated_at', DB::raw('sum(sold_products.total_amount) as total_amount'))
-                //->whereDay('sales.finalized_at', null)
-                //->OrwhereDay('sales.finalized_at', $day)
-                ->groupBy('sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
-                ,'sales.created_at','sales.updated_at')
-                ->orderBy('created_at', 'desc')
-                ->get();  
+            $year = $request->year;
+            $mes = $request->mes;
+
+            $sales = Sale::leftjoin('sold_products','sales.id','sold_products.sale_id')
+            ->join('users','sales.user_id','users.id')
+            ->select('sales.finalized_at','users.name',DB::raw('SUM(sold_products.qty) as sum'), DB::raw('COUNT(sale_id) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->groupBy('users.name','sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
+            ,'sales.created_at','sales.updated_at')
+            ->orderBy('sales.created_at', 'desc')
+            ->whereYear('sales.finalized_at', $year)
+            ->whereMonth('sales.finalized_at', $mes)
+            ->get();  
+
+            return response()->json([
+                'response' => true,
+                'data' => $sales
+            ]);
+        } catch (\Throwable $th) {
+            return $th;
+            return response()->json([
+                'response' => false,
+            ]);
+        }
+    }
+
+    public function get_search(){
+        try {
+            $sales = Sale::leftjoin('sold_products','sales.id','sold_products.sale_id')
+            ->join('users','sales.user_id','users.id')
+            ->select('sales.finalized_at','users.name',DB::raw('SUM(sold_products.qty) as sum'), DB::raw('COUNT(sale_id) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->groupBy('users.name','sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
+            ,'sales.created_at','sales.updated_at')
+            ->orderBy('sales.created_at', 'desc')
+            ->get();  
+
+            return response()->json([
+                'response' => true,
+                'data' => $sales
+            ]);
+        } catch (\Throwable $th) {
+            return $th;
+            return response()->json([
+                'response' => false,
+            ]);
+        }
+    }
+
+    public function quincena_search(Request $request){
+        try {
+            $year = $request->year;
+            $mes = $request->mes;
+            $quincena = $request->quincena;
+            $ini = "";
+            $fin = "";
+            if ($quincena == 1) {
+                $ini = 01;
+                $fin = 15;
+            } else if($quincena == 2){
+                $ini = 16;
+                $fin = 31;
             }
+
+            $sales = Sale::leftjoin('sold_products','sales.id','sold_products.sale_id')
+            ->join('users','sales.user_id','users.id')
+            ->select('sales.finalized_at','users.name',DB::raw('SUM(sold_products.qty) as sum'), DB::raw('COUNT(sale_id) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->groupBy('users.name','sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
+            ,'sales.created_at','sales.updated_at')
+            ->orderBy('sales.created_at', 'desc')
+            ->whereDay('sales.finalized_at', '>=' ,$ini)
+            ->whereDay('sales.finalized_at', '<=' ,$fin)
+            ->whereYear('sales.finalized_at', $year)
+            ->whereMonth('sales.finalized_at', $mes)
+            ->get();  
 
             return response()->json([
                 'response' => true,

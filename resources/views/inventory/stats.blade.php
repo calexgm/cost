@@ -148,7 +148,7 @@
             </div>
         </div>
     </div>
-    @endif @if (auth()->user()->rol_id == 1)
+    @endif 
     <div class="row">
         <div class="col-md-5">
             <div class="card ">
@@ -161,6 +161,7 @@
 
             </div>
         </div>
+        @if (auth()->user()->rol_id == 1)
         <div class="col-md-7">
             <div class="card card-chart">
                 <div class="card-header">
@@ -172,8 +173,8 @@
 
             </div>
         </div>
+        @endif
     </div>
-    @endif
 </div>
 @endsection @push('js')
 <script>
@@ -259,70 +260,7 @@
         });
     }
 </script>
-<!-- More Prods-->
-<script>
-    $(document).on('click', '#btn_agotados', function() {
-        $('#modal_agotados').modal('show');
-    });
-    $(document).ready(function() {
-        $.ajax({
-            url: 'more_product',
-            type: 'post',
-            beforeSend: function() {},
-            success: function(response) {
-                if (response.response) {
-                    get_more(response.data);
-                } else {
-                    console.log(response);
-                    alertify.error('Ocurrio un error.');
-                }
-            },
 
-            error: function(x, xs, xt) {
-                console.log(x);
-                alertify.error('Ocurrio un error.');
-            }
-        });
-    });
-
-    function get_more(data) {
-        var name = [];
-        var qtycan = [];
-        data.forEach(element => {
-            name.push(element.name);
-            qtycan.push(element.qty);
-        });
-        const ctx = document.getElementById('myMore').getContext('2d');
-        const myMore = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: name,
-                datasets: [{
-                    label: '',
-                    data: qtycan,
-                    backgroundColor: [
-                        'rgba(0, 0, 255, 0.3)',
-                        'rgba(138, 43, 226, 0.3)',
-                        'rgba(165, 42, 42, 0.3)',
-                        'rgba(222, 184, 135, 0.3)',
-                        'rgba(127, 255, 0, 0.3)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                    }
-                }
-            }
-        });
-    }
-</script>
 <!-- Sales Users-->
 <script>
     $(document).ready(function() {
@@ -392,4 +330,69 @@
         });
     }
 </script>
-@endif @endpush
+@endif 
+
+<!-- More Prods-->
+<script>
+    $(document).on('click', '#btn_agotados', function() {
+        $('#modal_agotados').modal('show');
+    });
+    $(document).ready(function() {
+        $.ajax({
+            url: 'more_product',
+            type: 'post',
+            beforeSend: function() {},
+            success: function(response) {
+                if (response.response) {
+                    get_more(response.data);
+                } else {
+                    console.log(response);
+                    alertify.error('Ocurrio un error.');
+                }
+            },
+
+            error: function(x, xs, xt) {
+                console.log(x);
+                alertify.error('Ocurrio un error.');
+            }
+        });
+    });
+
+    function get_more(data) {
+        var name = [];
+        var qtycan = [];
+        data.forEach(element => {
+            name.push(element.name);
+            qtycan.push(element.qty);
+        });
+        const ctx = document.getElementById('myMore').getContext('2d');
+        const myMore = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: name,
+                datasets: [{
+                    label: '',
+                    data: qtycan,
+                    backgroundColor: [
+                        'rgba(0, 0, 255, 0.3)',
+                        'rgba(138, 43, 226, 0.3)',
+                        'rgba(165, 42, 42, 0.3)',
+                        'rgba(222, 184, 135, 0.3)',
+                        'rgba(127, 255, 0, 0.3)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                    }
+                }
+            }
+        });
+    }
+</script>@endpush
