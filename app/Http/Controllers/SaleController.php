@@ -19,6 +19,7 @@ class SaleController extends Controller
     {
         $id = Auth::user()->id;
         $rol_id = Auth::user()->rol_id;
+        $day = date('d');
         if ($rol_id == 2) {
             $sales = Sale::leftjoin('sold_products','sales.id','=','sold_products.sale_id')
             ->select('sales.id','sales.user_id',DB::raw('DATE_ADD(sales.finalized_at, INTERVAL 30 MINUTE) as finalized_at')
@@ -30,8 +31,10 @@ class SaleController extends Controller
             ->get();  
         }else {
             $sales = Sale::leftjoin('sold_products','sales.id','=','sold_products.sale_id')
-            ->select('sales.id','sales.user_id',DB::raw('DATE_ADD(sales.finalized_at, INTERVAL 30 MINUTE) as finalized_at')
+            ->select('sales.finalized_at as final_table','sales.id','sales.user_id',DB::raw('DATE_ADD(sales.finalized_at, INTERVAL 30 MINUTE) as finalized_at')
             ,'sales.created_at','sales.updated_at', DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->whereDay('sales.finalized_at', null)
+            ->OrwhereDay('sales.finalized_at', $day)
             ->groupBy('sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
             ,'sales.created_at','sales.updated_at')
             ->orderBy('created_at', 'desc')

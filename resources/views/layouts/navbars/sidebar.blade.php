@@ -1,12 +1,12 @@
 <div class="sidebar" data-color="white" data-active-color="danger">
     <div class="logo">
-        <a href="https://www.creative-tim.com" class="simple-text logo-mini">
+        <a href="#" class="simple-text logo-mini">
             <div class="logo-image-small">
                 <img src="{{ asset('images/icono.png') }}">
             </div>
             <!-- <p>CT</p> -->
         </a>
-        <a href="https://www.creative-tim.com" class="simple-text logo-normal">
+        <a href="#" class="simple-text logo-normal">
             COSTS
             <!-- <div class="logo-image-big">
             <img src="../assets/img/logo-big.png">
@@ -36,6 +36,13 @@
                     <p>Productos</p>
                 </a>
             </li>
+
+            <li id="products_ware">
+                <a href="{{ route('products_ware') }}">
+                    <i class="nc-icon nc-box"></i>
+                    <p>Bodega</p>
+                </a>
+            </li>
             @endif
             
             <li id="vents">
@@ -51,12 +58,12 @@
                     <p>Usuarios</p>
                 </a>
             </li>
-            {{-- <li id="repors">
+            <li id="repors">
                 <a href="{{ route('reports') }}">
                     <i class="nc-icon nc-chart-bar-32"></i>
                     <p>Reportes</p>
                 </a>
-            </li> --}}
+            </li>
             @endif
             
         </ul>

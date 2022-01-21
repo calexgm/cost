@@ -51,6 +51,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::match(['put', 'patch', 'post'], 'add_product', ['as' => 'add.product', 'uses' => 'ProductController@store']);
         Route::match(['put', 'patch', 'post'], 'add_product_stock', ['as' => 'add.product.stock', 'uses' => 'ProductController@store_stock']);
         
+        //Rutas de productos de bodega
+        Route::get('/products_ware', 'ProductWarehouseController@index')->name('products_ware');
+        Route::post('/exist_ware', 'ProductWarehouseController@exist')->name('exist_ware');
+        Route::match(['put', 'patch'], 'edit_product_ware_modal', ['as' => 'edit.product_ware.modal', 'uses' => 'ProductWarehouseController@edit_product']);
+        Route::match(['put', 'patch','post'], 'update_product_ware', ['as' => 'update.product_ware', 'uses' => 'ProductWarehouseController@update']);
+        Route::match(['put', 'patch'], 'status_product_ware', ['as' => 'status.product_ware', 'uses' => 'ProductWarehouseController@status_product']);
+        Route::match(['put', 'patch', 'post'], 'add_product_ware', ['as' => 'add.product_ware', 'uses' => 'ProductWarehouseController@store']);
+        Route::match(['put', 'patch', 'post'], 'add_product_ware_stock', ['as' => 'add.product_ware.stock', 'uses' => 'ProductWarehouseController@store_stock']);
 
         //Reportes
         
@@ -58,6 +66,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/get_sales_month', 'ReportController@get_sales_month')->name('get_sales_month');
         Route::post('/more_product', 'ReportController@more_product')->name('more_product');
         Route::post('/sales_users', 'ReportController@sales_users')->name('sales_users');
+        Route::post('/year_search', 'ReportController@year_search')->name('year_search');
+        
         
     });
     //Rutas de ventas

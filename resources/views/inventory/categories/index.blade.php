@@ -21,7 +21,7 @@
 
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-bordered" id="tblUsers">
+                            <table class="table table-striped" id="tblUsers">
                                 <thead class=" text-primary">
                                     <th>
                                         NOMBRE
@@ -50,7 +50,8 @@
 
                                             </td>
                                             <td>
-                                                {{ $category->created_at }}
+                                            
+                                                {{ date('d-M-Y', strtotime($category->created_at)) }}
                                             </td>
                                             <td>
                                                 @if ($category->status == 1)
@@ -59,24 +60,24 @@
                                                     Inactivo
                                                 @endif
                                             </td>
-                                            <td class="text-right">
+                                            <td class="text-center">
                                                 <form method="post">
                                                     @if ($category->status == 1)
-                                                        <button type="button" data-id="{{ $category->id }}"
-                                                            class="btn btn-primary btn-round btn_edit_category"> <i
-                                                                class="far fa-edit"></i></button>
-                                                        <button type="button" data-status="{{ $category->status }}"
+                                                        <a href="#" data-id="{{ $category->id }}"
+                                                            class="btn_edit_category text-primary"> <i
+                                                                class="far fa-edit fa-2x"></i></a>
+                                                        <a href="#" data-status="{{ $category->status }}"
                                                             data-idd="{{ $category->id }}"
-                                                            class="btn btn-success btn-round btn_status_category"><i
-                                                                class="fas fa-lock-open"></i></button>
+                                                            class="text-success btn_status_category"><i
+                                                                class="fas fa-lock-open fa-2x"></i></a>
                                                     @else
-                                                        <button type="button" data-id="{{ $category->id }}"
-                                                            class="btn btn-primary btn-round btn_edit_category"> <i
-                                                                class="far fa-edit "></i></button>
-                                                        <button type="button" data-status="{{ $category->status }}"
+                                                        <a href="#" data-id="{{ $category->id }}"
+                                                            class="btn_edit_category text-primary"> <i
+                                                                class="far fa-edit fa-2x "></i></a>
+                                                        <a href="#" data-status="{{ $category->status }}"
                                                             data-idd="{{ $category->id }}"
-                                                            class="btn btn-danger btn-round btn_status_category"><i
-                                                                class="fas fa-lock"></i></button>
+                                                            class="text-danger btn_status_category"><i
+                                                                class="fas fa-lock fa-2x"></i></a>
                                                     @endif
                                                 </form>
                                             </td>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\ProductWare;
 use App\ProductCategory;
 use App\Http\Requests\ProductRequest;
 use App\Shop_User;
@@ -13,9 +14,8 @@ use Carbon\Carbon;
 use Image;
 use Illuminate\Support\Str;
 
-class ProductController extends Controller
+class ProductWarehouseController extends Controller
 {
-    
     public function index()
     {
 
@@ -23,14 +23,14 @@ class ProductController extends Controller
         $user = Auth::user();
         $searchshop = DB::table('shop_user')->where('user_id', Auth::id())->first('shop_id');
         $categories = ProductCategory::where('shop_id', $searchshop->shop_id)->where('status',1)->get();
-        $products = Product::join('product_categories as pc','products.product_category_id','=','pc.id')
+        $products = ProductWare::join('product_categories as pc','product_warehouse.product_category_id','=','pc.id')
         ->where('pc.shop_id', $searchshop->shop_id)
-        ->select('products.name as product','pc.id as category', 'products.price', 'products.code_bar',
-        'products.stock','products.status','products.id','products.description', 'products.image')
+        ->select('product_warehouse.name as product','pc.id as category', 'product_warehouse.price', 'product_warehouse.code_bar',
+        'product_warehouse.stock','product_warehouse.status','product_warehouse.id','product_warehouse.description', 'product_warehouse.image')
         ->get();
 
 
-        return view('inventory.products.index', compact('products', 'categories'));
+        return view('inventory.productsware.index', compact('products', 'categories'));
     }
 
     public function exist(Request $request)
@@ -40,7 +40,7 @@ class ProductController extends Controller
 
             $code = $request->code;
 
-            $prod = Product::where('code_bar', $code)->first();
+            $prod = ProductWare::where('code_bar', $code)->first();
             
             if ($prod) {
                 DB::commit();
@@ -67,7 +67,7 @@ class ProductController extends Controller
     {
         try {
             DB::beginTransaction();
-            $product = Product::create([
+            $product = ProductWare::create([
                 'code_bar' => $request->codebar,
                 'name' => $request->name,
                 'description' => $request->descripcion,
@@ -113,7 +113,7 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
             
-            $product = Product::find($request->id);
+            $product = ProductWare::find($request->id);
             $product->stock += $request->cantidad;
             $saved = $product->save();
             DB::commit();
@@ -134,22 +134,106 @@ class ProductController extends Controller
     {
         try {
             DB::beginTransaction();
-            $date_update = Carbon::now();
+            $id = $request->id;
+            $allval = $request->allval;
+            $cantidad = $request->cantidad;
 
-            Product::where('id', $request->id)
-            ->update([
-                'status' => $request->status,
-                'updated_at' => $date_update,
-            ]);
-            DB::commit();
-            return response()->json([
-                'response' => true,
-            ]);
+            $prod = ProductWare::where('id', $id)->first();
+
+            if ($prod) {
+                if ($allval == 0) {
+
+                    $prods = Product::where('code_bar', $prod->code_bar)->first();
+                    if ($prods) {
+                        $count = $prods->stock + $cantidad;
+                        Product::where('code_bar', $prod->code_bar)
+                        ->update([
+                            'stock' => $count
+                        ]);
+                        $count_rest = $prod->stock - $cantidad;
+                        ProductWare::where('id', $id)
+                        ->update([
+                            'stock' => $count_rest
+                        ]);
+                        DB::commit();
+                        return response()->json([
+                            'response' => true,
+                            'msg' => 'Salida de bodega con exito'
+                        ]);
+                    }else {
+                        $count = $cantidad;
+                        $count_rest = $prod->stock - $cantidad;
+                        ProductWare::where('id', $id)
+                        ->update([
+                            'stock' => $count_rest
+                        ]);
+                        $create = Product::create([
+                            'code_bar' => $prod->code_bar,
+                            'name' => $prod->name,
+                            'description' => $prod->description,
+                            'product_category_id' => $prod->product_category_id,
+                            'price' => $prod->price,
+                            'stock' => $count,
+                            'status' => 1,
+                        ]);
+                        DB::commit();
+                        return response()->json([
+                            'response' => true,
+                            'msg' => 'Salida de bodega con exito'
+                        ]);
+                    }
+                    
+                }else {
+                    $prods = Product::where('code_bar', $prod->code_bar)->first();
+                    if ($prods) {
+                        $count = $prod->stock + $prods->stock;
+                        Product::where('code_bar', $prod->code_bar)
+                        ->update([
+                            'stock' => $count
+                        ]);
+                        ProductWare::where('id', $id)
+                        ->update([
+                            'stock' => 0
+                        ]);
+                        DB::commit();
+                        return response()->json([
+                            'response' => true,
+                            'msg' => 'Salida de bodega con exito'
+                        ]);
+                    }else {
+                        ProductWare::where('id', $id)
+                        ->update([
+                            'stock' => 0
+                        ]);
+                        $create = Product::create([
+                            'code_bar' => $prod->code_bar,
+                            'name' => $prod->name,
+                            'description' => $prod->description,
+                            'product_category_id' => $prod->product_category_id,
+                            'price' => $prod->price,
+                            'stock' => $prod->stock,
+                            'status' => 1,
+                        ]);
+                        DB::commit();
+                        return response()->json([
+                            'response' => true,
+                            'msg' => 'Salida de bodega con exito'
+                        ]);
+                    }
+                }
+                
+            }else {
+                DB::commit();
+                return response()->json([
+                    'response' => false,
+                    'msg' => 'Error al encontrar este producto'
+                ]);
+            }
         } catch (Exception $th) {
             DB::rollBack();
             return response()->json([
                 'response' => false,
-                'data' => $th
+                'msg' => 'Ocurrio un error'
             ]);
         }
     }
@@ -174,7 +258,7 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
             $date_update = Carbon::now();
-            $product = Product::where('id',$request->id)
+            $product = ProductWare::where('id',$request->id)
             ->update([
                 'code_bar' => $request->code,
                 'name' => $request->name,
@@ -186,7 +270,7 @@ class ProductController extends Controller
             ]);
 
             $file = $request->file('photo');
-            $pro = Product::find($request->id);
+            $pro = ProductWare::find($request->id);
             if ($file != "") {
                 $extension = $file->getClientOriginalExtension();
                 $name = Str::random(20);

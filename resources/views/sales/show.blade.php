@@ -51,7 +51,7 @@
                                     </th>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr class="table-success">
                                         <td>{{ $sale->id }}</td>
                                         <td>{{ date('d-m-Y', strtotime($sale->created_at)) }}</td>
                                         <td>{{ $sale->user->name }}</td>

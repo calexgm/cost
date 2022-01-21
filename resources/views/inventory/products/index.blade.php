@@ -32,15 +32,19 @@
                                         CANTIDAD
                                     </th>
                                     <th>
-                                        IMAGEN
+                                        CÓDIGO DE BARRAS
                                     </th>
-                                    <th class="text-right">
+                                    <th class="text-center">
 
                                     </th>
                                 </thead>
                                 <tbody>
                                     @foreach ($products as $prod)
-                                        <tr>
+                                        @if ($prod->stock == 0)
+                                        <tr class="table-danger">
+                                        @else  
+                                        <tr>  
+                                        @endif
                                             <td>
                                                 {{ $prod->product }}
                                             </td>
@@ -51,32 +55,65 @@
                                                 {{ $prod->stock }}
                                             </td>
                                             <td>
-                                                <img id="list_img" src="images/products/{{ $prod->image }}" class="card_img_tbl" alt="imagen producto">
+                                                {{ $prod->code_bar }}
+                                                <!--<img id="list_img" src="images/products/{{ $prod->image }}" class="card_img_tbl" alt="imagen producto"> -->
                                             </td>
-                                            <td class="text-right">
+                                            <td class="">
                                                 <form method="post">
                                                     @if ($prod->status == 1)
-                                                        <button type="button" data-id="{{ $prod->id }}"
-                                                            class="btn btn-secondary btn-round btn_show_product"> <i
-                                                                class="fas fa-info-circle"></i></button>
-                                                        <button type="button" data-id="{{ $prod->id }}"
-                                                            class="btn btn-primary btn-round btn_edit_product"> <i
-                                                                class="far fa-edit"></i></button>
-                                                        <button type="button" data-status="{{ $prod->status }}"
+                                                        <a href="#" 
+                                                        data-id="{{ $prod->id }}"
+                                                        data-code_bar="{{ $prod->code_bar }}"
+                                                        data-name="{{ $prod->product }}"
+                                                        data-price="{{ $prod->price }}"
+                                                        data-stock="{{ $prod->stock }}"
+                                                        data-category="{{ $prod->category }}"
+                                                        data-description="{{ $prod->description }}"
+                                                        data-image="{{ $prod->image }}"
+                                                            class="btn_show_product text-secondary"> <i
+                                                                class="fas fa-info-circle fa-2x"></i></a>
+                                                        <a href="#" 
+                                                        data-id="{{ $prod->id }}"
+                                                        data-code_bar="{{ $prod->code_bar }}"
+                                                        data-name="{{ $prod->product }}"
+                                                        data-price="{{ $prod->price }}"
+                                                        data-stock="{{ $prod->stock }}"
+                                                        data-category="{{ $prod->category }}"
+                                                        data-description="{{ $prod->description }}"
+                                                        data-image="{{ $prod->image }}"
+                                                            class="btn_edit_product text-primary"> <i
+                                                                class="far fa-edit fa-2x"></i></a>
+                                                        <a href="#" data-status="{{ $prod->status }}"
                                                             data-idd="{{ $prod->id }}"
-                                                            class="btn btn-success btn-round btn_status_product"><i
-                                                                class="fas fa-lock-open"></i></button>
+                                                            class="btn_status_product text-success"><i
+                                                                class="fas fa-lock-open fa-2x"></i></a>
                                                     @else
-                                                        <button type="button" data-id="{{ $prod->id }}"
-                                                            class="btn btn-secondary btn-round btn_show_product"> <i
-                                                                class="fas fa-info-circle"></i></button>
-                                                        <button type="button" data-id="{{ $prod->id }}"
-                                                            class="btn btn-primary btn-round btn_edit_product"> <i
-                                                                class="far fa-edit "></i></button>
-                                                        <button type="button" data-status="{{ $prod->status }}"
+                                                        <a href="#" 
+                                                        data-id="{{ $prod->id }}"
+                                                        data-code_bar="{{ $prod->code_bar }}"
+                                                        data-name="{{ $prod->product }}"
+                                                        data-price="{{ $prod->price }}"
+                                                        data-stock="{{ $prod->stock }}"
+                                                        data-category="{{ $prod->category }}"
+                                                        data-description="{{ $prod->description }}"
+                                                        data-image="{{ $prod->image }}"
+                                                            class="btn_show_product text-secondary"> <i
+                                                                class="fas fa-info-circle fa-2x"></i></a>
+                                                        <a href="#" 
+                                                        data-id="{{ $prod->id }}"
+                                                        data-code_bar="{{ $prod->code_bar }}"
+                                                        data-name="{{ $prod->product }}"
+                                                        data-price="{{ $prod->price }}"
+                                                        data-stock="{{ $prod->stock }}"
+                                                        data-category="{{ $prod->category }}"
+                                                        data-description="{{ $prod->description }}"
+                                                        data-image="{{ $prod->image }}"
+                                                            class="btn_edit_product text-primary"> <i
+                                                                class="far fa-edit fa-2x "></i></a>
+                                                        <a href="#" data-status="{{ $prod->status }}"
                                                             data-idd="{{ $prod->id }}"
-                                                            class="btn btn-danger btn-round btn_status_product"><i
-                                                                class="fas fa-lock"></i></button>
+                                                            class="btn_status_product text-danger"><i
+                                                                class="fas fa-lock fa-2x"></i></a>
                                                     @endif
                                                 </form>
                                             </td>
@@ -159,7 +196,7 @@
                 </div>
                 <div class="modal-body">
                     <form action="" autocomplete="off">
-                        <div class="row text-center">
+                        <div class="row text-center" style="display:none;">
                             <div class="col">
                                 <fieldset>
                                     <div class="input-file-row-1">
@@ -256,7 +293,7 @@
                 <div class="modal-body">
                     <form action="" autocomplete="off">
                         <input type="hidden" id="id_product" class="form-control" style="visibility: hidden;">
-                        <div class="row text-center">
+                        <div class="row text-center" style="display: none;">
                             <div class="col">
                                 <fieldset>
                                     <div class="input-file-row-1">
@@ -369,7 +406,7 @@
                         </div>
                     </div>
                     <div class="container" id="div_add_prod">
-                        <div class="row text-center">
+                        <div class="row text-center" style="display: none;">
                             <div class="col">
                                 <fieldset>
                                     <div class="input-file-row-1">
@@ -583,12 +620,7 @@
     </script>
     <script>
         $(document).ready(function() {
-            $("#dashboard").removeClass("active");
-            $("#categories").removeClass("active");
             $("#products").addClass("active");
-            $("#vents").removeClass("active");
-            $("#users").removeClass("active");
-            $("#repors").removeClass("active");
         });
         //Funcion cambiar estado
         $('.btn_status_product').click(function() {
@@ -643,108 +675,45 @@
         });
         //Funcion show producto
         $('.btn_show_product').click(function() {
-            var id = $(this).attr("data-id");
+            let name = $(this).attr("data-name");
+            let code_bar = $(this).attr("data-code_bar");
+            let price = $(this).attr("data-price");
+            let stock = $(this).attr("data-stock");
+            let category = $(this).attr("data-category");
+            let description = $(this).attr("data-description");
+            let image = $(this).attr("data-image");
 
-            if (id == "") {
-                alertify.error('Ocurrio un error, intentelo nuevamente.');
-            } else {
-                $.ajax({
-                    url: 'edit_product_modal',
-                    data: {
-                        id: id,
-                    },
-                    type: 'put',
-                    beforeSend: function() {
-                        $('.btn_show_product').prop('disabled', true);
-                        $('.btn_show_product').empty();
-                        $('.btn_show_product').append(
-                            '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>'
-                        );
-                    },
-                    success: function(response) {
-                        if (response.response) {
-                            $('.btn_show_product').prop('disabled', false);
-                            $('.btn_show_product').empty();
-                            $('.btn_show_product').append(
-                                '<i class="fas fa-info-circle"></i></button>'
-                            );
-                            $('#show_code').val(response.data.code_bar);
-                            $('#show_name').val(response.data.name);
-                            $('#show_precio').val(response.data.price);
-                            $('#show_cantidad').val(response.data.stock);
-                            $('#show_categoria').val(response.data.product_category_id);
-                            $('#show_descripcion').val(response.data.description);
-                            let img = "images/products/" + response.data.image + "";
-                            $('#preview_image_show').attr('src', img);
-                            $('#showProduct').modal('show');
-                        } else {
-                            console.log(response);
-                            alertify.error('Ocurrio un error.');
-                        }
-
-
-                    },
-
-                    error: function(x, xs, xt) {
-                        console.log(x);
-                        alertify.error('Ocurrio un error.');
-                    }
-                });
-            }
-
+            $('#show_code').val(code_bar);
+            $('#show_name').val(name);
+            $('#show_precio').val(price);
+            $('#show_cantidad').val(stock);
+            $('#show_categoria').val(category);
+            $('#show_descripcion').val(description);
+            let img = "images/products/" + image + "";
+            $('#preview_image_show').attr('src', img);
+            $('#showProduct').modal('show');
         });
         //Funcion traer datos producto
         $('.btn_edit_product').click(function() {
-            var id = $(this).attr("data-id");
+            let id = $(this).attr("data-id");
+            let name = $(this).attr("data-name");
+            let code_bar = $(this).attr("data-code_bar");
+            let price = $(this).attr("data-price");
+            let stock = $(this).attr("data-stock");
+            let category = $(this).attr("data-category");
+            let description = $(this).attr("data-description");
+            let image = $(this).attr("data-image");
 
-            if (id == "") {
-                alertify.error('Ocurrio un error, intentelo nuevamente.');
-            } else {
-                $.ajax({
-                    url: 'edit_product_modal',
-                    data: {
-                        id: id,
-                    },
-                    type: 'put',
-                    beforeSend: function() {
-                        $('.btn_edit_product').prop('disabled', true);
-                        $('.btn_edit_product').empty();
-                        $('.btn_edit_product').append(
-                            '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>'
-                        );
-                    },
-                    success: function(response) {
-                        if (response.response) {
-                            $('.btn_edit_product').prop('disabled', false);
-                            $('.btn_edit_product').empty();
-                            $('.btn_edit_product').append(
-                                '<i class="fas fa-edit "></i>'
-                            );
-                            $('#id_product').val(response.data.id);
-                            $('#edit_code').val(response.data.code_bar);
-                            $('#edit_name').val(response.data.name);
-                            $('#edit_precio').val(response.data.price);
-                            $('#edit_cantidad').val(response.data.stock);
-                            $('#edit_categoria').val(response.data.product_category_id);
-                            $('#edit_descripcion').val(response.data.description);
-                            let img = "images/products/" + response.data.image + "";
-                            $('#preview_image_edit').attr('src', img);
-                            $('#editProduct').modal('show');
-                        } else {
-                            console.log(response);
-                            alertify.error('Ocurrio un error.');
-                        }
-
-
-                    },
-
-                    error: function(x, xs, xt) {
-                        console.log(x);
-                        alertify.error('Ocurrio un error.');
-                    }
-                });
-            }
-
+            $('#id_product').val(id);
+            $('#edit_code').val(code_bar);
+            $('#edit_name').val(name);
+            $('#edit_precio').val(price);
+            $('#edit_cantidad').val(stock);
+            $('#edit_categoria').val(category);
+            $('#edit_descripcion').val(description);
+            let img = "images/products/" + image + "";
+            $('#preview_image_edit').attr('src', img);
+            $('#editProduct').modal('show');
         });
         //Funcion editar producto
         $('.btn_update_product').click(function() {
@@ -773,7 +742,7 @@
                 alertify.error('El campo cantidad es requerido.');
             } else if (cantidad <= 0) {
                 alertify.error('Ingrese una cantidad válida.');
-            } else if (categoria == "") {
+            } else if (categoria == "" || categoria == null) {
                 alertify.error('El campo categoría es requerido.');
             } else if (descripcion == "") {
                 alertify.error('El campo descripción es requerido.');
@@ -802,9 +771,9 @@
                     processData: false,
                     contentType: false,
                     beforeSend: function() {
-                        $('.btn_update_category').prop('disabled', true);
-                        $('.btn_update_category').empty();
-                        $('.btn_update_category').append(
+                        $('.btn_update_product').prop('disabled', true);
+                        $('.btn_update_product').empty();
+                        $('.btn_update_product').append(
                             '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Cargando...'
                         );
                     },
@@ -816,15 +785,19 @@
                                 location.reload();
                             }, 2000);
                         } else {
-                            $('.btn_update_category').prop('disabled', false);
-                            $('.btn_update_category').empty();
-                            $('.btn_update_category').append('Editar');
+                            $('.btn_update_product').prop('disabled', false);
+                            $('.btn_update_product').empty();
+                            $('.btn_update_product').append('Editar');
                             alertify.error('Ocurrio un error al editar el producto.');
                         }
                     },
                     error: function(x, xs, xt) {
                         console.log(x);
                         alertify.error('Ocurrio un error.');
+                        $('.btn_update_product').prop('disabled', false);
+                            $('.btn_update_product').empty();
+                            $('.btn_update_product').append('Editar');
+                            alertify.error('Ocurrio un error al editar el producto.');
                     }
                 });
             }

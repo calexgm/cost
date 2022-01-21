@@ -26,6 +26,7 @@ class InventoryController extends Controller
         $productscount = Product::join('product_categories as pc','products.product_category_id','=','pc.id')
         ->where('pc.shop_id', $searchshop->shop_id)->count();
         $productsexhausted = Product::where('stock', 0)->count();
+        $productsexhausted_d = Product::where('stock', 0)->get();
         $userscount = DB::table('shop_user')->where('shop_id',$searchshop->shop_id)->count();
 
         $sales_today = DB::table('users')
@@ -40,6 +41,7 @@ class InventoryController extends Controller
         'productsexhausted' => $productsexhausted,
         'userscount' => $userscount-1,
         'sale' => $sales_today,
+        'productsexhausted_d' => $productsexhausted_d
         //viejas variables
         ]);
         }else{
