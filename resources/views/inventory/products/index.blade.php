@@ -61,8 +61,7 @@
                                             <td class="">
                                                 <form method="post">
                                                     @if ($prod->status == 1)
-                                                        <a href="#" 
-                                                        data-id="{{ $prod->id }}"
+                                                    <button type="button" data-id="{{ $prod->id }}"
                                                         data-code_bar="{{ $prod->code_bar }}"
                                                         data-name="{{ $prod->product }}"
                                                         data-price="{{ $prod->price }}"
@@ -70,10 +69,9 @@
                                                         data-category="{{ $prod->category }}"
                                                         data-description="{{ $prod->description }}"
                                                         data-image="{{ $prod->image }}"
-                                                            class="btn_show_product text-secondary"> <i
-                                                                class="fas fa-info-circle fa-2x"></i></a>
-                                                        <a href="#" 
-                                                        data-id="{{ $prod->id }}"
+                                                        class="btn btn-secondary btn-round btn_show_product"> <i
+                                                            class="fas fa-info-circle"></i></button>
+                                                    <button type="button" ddata-id="{{ $prod->id }}"
                                                         data-code_bar="{{ $prod->code_bar }}"
                                                         data-name="{{ $prod->product }}"
                                                         data-price="{{ $prod->price }}"
@@ -81,15 +79,14 @@
                                                         data-category="{{ $prod->category }}"
                                                         data-description="{{ $prod->description }}"
                                                         data-image="{{ $prod->image }}"
-                                                            class="btn_edit_product text-primary"> <i
-                                                                class="far fa-edit fa-2x"></i></a>
-                                                        <a href="#" data-status="{{ $prod->status }}"
+                                                        class="btn btn-primary btn-round btn_edit_product"><i
+                                                            class="fas fa-edit"></i></button>
+                                                    <button type="button" data-status="{{ $prod->status }}"
                                                             data-idd="{{ $prod->id }}"
-                                                            class="btn_status_product text-success"><i
-                                                                class="fas fa-lock-open fa-2x"></i></a>
+                                                        class="btn btn-success btn-round btn_status_product"><i
+                                                            class="fas fa-lock-open"></i></button>    
                                                     @else
-                                                        <a href="#" 
-                                                        data-id="{{ $prod->id }}"
+                                                    <button type="button" data-id="{{ $prod->id }}"
                                                         data-code_bar="{{ $prod->code_bar }}"
                                                         data-name="{{ $prod->product }}"
                                                         data-price="{{ $prod->price }}"
@@ -97,10 +94,9 @@
                                                         data-category="{{ $prod->category }}"
                                                         data-description="{{ $prod->description }}"
                                                         data-image="{{ $prod->image }}"
-                                                            class="btn_show_product text-secondary"> <i
-                                                                class="fas fa-info-circle fa-2x"></i></a>
-                                                        <a href="#" 
-                                                        data-id="{{ $prod->id }}"
+                                                        class="btn btn-secondary btn-round btn_show_product"> <i
+                                                            class="fas fa-info-circle"></i></button>
+                                                    <button type="button" ddata-id="{{ $prod->id }}"
                                                         data-code_bar="{{ $prod->code_bar }}"
                                                         data-name="{{ $prod->product }}"
                                                         data-price="{{ $prod->price }}"
@@ -108,12 +104,13 @@
                                                         data-category="{{ $prod->category }}"
                                                         data-description="{{ $prod->description }}"
                                                         data-image="{{ $prod->image }}"
-                                                            class="btn_edit_product text-primary"> <i
-                                                                class="far fa-edit fa-2x "></i></a>
-                                                        <a href="#" data-status="{{ $prod->status }}"
+                                                        class="btn btn-primary btn-round btn_edit_product"><i
+                                                            class="fas fa-edit"></i></button>
+                                                    <button type="button" data-status="{{ $prod->status }}"
                                                             data-idd="{{ $prod->id }}"
-                                                            class="btn_status_product text-danger"><i
-                                                                class="fas fa-lock fa-2x"></i></a>
+                                                        class="btn btn-danger btn-round btn_status_product"><i
+                                                            class="fas fa-lock"></i></button>
+                                                        
                                                     @endif
                                                 </form>
                                             </td>

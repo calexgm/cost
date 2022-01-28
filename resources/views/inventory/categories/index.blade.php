@@ -63,21 +63,21 @@
                                             <td class="text-center">
                                                 <form method="post">
                                                     @if ($category->status == 1)
-                                                        <a href="#" data-id="{{ $category->id }}"
-                                                            class="btn_edit_category text-primary"> <i
-                                                                class="far fa-edit fa-2x"></i></a>
-                                                        <a href="#" data-status="{{ $category->status }}"
-                                                            data-idd="{{ $category->id }}"
-                                                            class="text-success btn_status_category"><i
-                                                                class="fas fa-lock-open fa-2x"></i></a>
+                                                    <button type="button" data-id="{{ $category->id }}"
+                                                        class="btn btn-primary btn-round btn_edit_category"> <i
+                                                            class="fas fa-edit "></i></button>
+                                                    <button type="button" data-status="{{ $category->status }}"
+                                                        data-idd="{{ $category->id }}"
+                                                        class="btn btn-success btn-round btn_status_category"><i
+                                                            class="fas fa-lock-open"></i></button>
                                                     @else
-                                                        <a href="#" data-id="{{ $category->id }}"
-                                                            class="btn_edit_category text-primary"> <i
-                                                                class="far fa-edit fa-2x "></i></a>
-                                                        <a href="#" data-status="{{ $category->status }}"
+                                                    <button type="button" data-id="{{ $category->id }}"
+                                                            class="btn btn-primary btn-round btn_edit_category"> <i
+                                                                class="fas fa-edit "></i></button>
+                                                        <button type="button" data-status="{{ $category->status }}"
                                                             data-idd="{{ $category->id }}"
-                                                            class="text-danger btn_status_category"><i
-                                                                class="fas fa-lock fa-2x"></i></a>
+                                                            class="btn btn-danger btn-round btn_status_category"><i
+                                                                class="fas fa-lock"></i></button>
                                                     @endif
                                                 </form>
                                             </td>

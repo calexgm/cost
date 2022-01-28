@@ -44,12 +44,15 @@
                 </a>
             </li>
             @endif
-            <li id="vents">
-                <a href="{{ route('ventas') }}">
-                    <i class="nc-icon nc-money-coins"></i>
-                    <p>Ventas</p>
-                </a>
-            </li>
+            <form method="post" action="{{ route('create_sale') }}" name="form_create">
+                @csrf
+                <li id="vents">
+                    <a type="submit" class="modal_add_sales">
+                        <i class="nc-icon nc-money-coins"></i>
+                        <p>Ventas</p>
+                    </a>
+                </li>
+            </form>
             <li id="h_vents">
                 <a href="{{ route('history_ventas') }}">
                     <i class="nc-icon nc-money-coins"></i>
@@ -70,7 +73,7 @@
                 </a>
             </li>
             @endif
-            
+
         </ul>
     </div>
 </div>

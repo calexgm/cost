@@ -10,16 +10,10 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-lg-8">
-                                <h4 class="card-title"> Ventas</h4>
+                                <h4 class="card-title"> Ventas del día</h4>
                             </div>
                             <div class="col-lg-4 text-right">
-                                <form method="post" action="{{ route('create_sale') }}" name="form_create">
-                                    @csrf
-                                    <button type="submit" class="btn btn-primary btn-round modal_add_sales"><i
-                                            class="fas fa-plus-circle"></i>
-                                        AGREGAR
-                                        VENTA</button>
-                                </form>
+                                
                             </div>
                         </div>
                     </div>
