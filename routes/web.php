@@ -65,9 +65,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/reports', 'ReportController@index')->name('reports');
         Route::post('/get_sales_month', 'ReportController@get_sales_month')->name('get_sales_month');
         Route::post('/sales_users', 'ReportController@sales_users')->name('sales_users');
-        Route::post('/year_search', 'ReportController@year_search')->name('year_search');
+        Route::post('/year_searchacer h', 'ReportController@year_search')->name('year_search');
         Route::post('/get_search', 'ReportController@get_search')->name('get_search');
         Route::post('/quincena_search', 'ReportController@quincena_search')->name('quincena_search');
+        Route::post('/range_search', 'ReportController@range_search')->name('range_search');
         
         
     });
@@ -77,6 +78,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Rutas de ventas
     Route::get('/ventas', 'SaleController@index')->name('ventas');
+    Route::get('/history_ventas', 'SaleController@index')->name('history_ventas');
     Route::post('/add_p', 'SaleController@store_product')->name('add_p');
     Route::post('/less_more', 'SaleController@less_more')->name('less_more');
     Route::post('/more', 'SaleController@more')->name('more');

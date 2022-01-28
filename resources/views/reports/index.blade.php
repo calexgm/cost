@@ -14,11 +14,11 @@
                             <div class="form-group">
                                 <label>Tipo de reporte</label>
                                 <select id="tipo_reporte" class="form-control">
-                                        <option value="">Seleccione un tipo</option>
-                                        <option value="1">Mensual</option>
-                                        <option value="2">Quincenal</option>
-                                        <!-- <option value="3">Semanal</option> -->
-                                    </select>
+                                    <option value="">Seleccione un tipo</option>
+                                    <option value="1">Mensual</option>
+                                    <option value="2">Quincenal</option>
+                                    <option value="3">Rango de fechas</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -27,7 +27,7 @@
                             <div class="form-group">
                                 <label>Año *</label>
                                 <select id="year_reporte" class="form-control">
-                                                                       
+
                                 </select>
                             </div>
                         </div>
@@ -41,15 +41,23 @@
                         </div>
                     </div>
                     <div class="row" id="Quincenal">
-                    <div class="col-6 pl-4 pr-4" style="display: noen;">
+                        <div class="col-6 pl-4 pr-4" style="display: noen;">
                             <div class="form-group">
                                 <label>Quincena</label>
                                 <select id="quincena_reporte" class="form-control">
-                                <option value="">Seleccione una quincena</option>
-                                <option value="1">Primera</option>
-                                <option value="2">Segunda</option>
+                                    <option value="">Seleccione una quincena</option>
+                                    <option value="1">Primera</option>
+                                    <option value="2">Segunda</option>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row" id="Rango" style="padding: 0.3rem 1.5rem 0.6rem 1.5rem">
+                        <input class="form-control" type="text" name="daterange" value="" />
+                    </div>
+                    <div class="row text-center">
+                        <div class="col pl-4 pr-4" id="button">
+
                         </div>
                     </div>
                     <div class="row">
@@ -64,9 +72,6 @@
                                             USUARIO
                                         </th>
                                         <th>
-                                            PRODUCTOS
-                                        </th>
-                                        <th>
                                             CANTIDAD
                                         </th>
                                         <th>
@@ -74,17 +79,13 @@
                                         </th>
                                     </thead>
                                     <tbody>
-                                        
+
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                    <div class="row text-center">
-                        <div class="col pl-4 pr-4" id="button">
 
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -92,15 +93,24 @@
 </div>
 @endsection @push('js')
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $("#repors").addClass("active");
 
         $('#Mensual').hide();
         $('#Quincenal').hide();
-        $('#Semanal').hide();
+        $('#Rango').hide();
+
+        //RANGO DE FECHAS
+        $(function () {
+            $('input[name="daterange"]').daterangepicker({
+                opens: 'left'
+            }, function (start, end, label) {
+                rango(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+            });
+        });
 
         //SELECCIONAR TIPO
-        $(document).on('change', '#tipo_reporte', function() {
+        $(document).on('change', '#tipo_reporte', function () {
             let tipo = $(this).val();
             if (tipo == 1) {
                 let currentTime = new Date();
@@ -114,7 +124,7 @@
                 $('#button').append('<button class="btn btn-success btn-round year_search">BUSCAR</button>');
                 $('#Mensual').show();
                 $('#Quincenal').hide();
-                $('#Semanal').hide();
+                $('#Rango').hide();
             } else if (tipo == 2) {
                 let currentTime = new Date();
                 let year_actual = currentTime.getFullYear()
@@ -128,19 +138,17 @@
 
                 $('#Mensual').show();
                 $('#Quincenal').show();
-                $('#Semanal').hide();
+                $('#Rango').hide();
             } else if (tipo == 3) {
                 $('#button').empty();
-                $('#button').append('<button class="btn btn-success btn-round semana_search">BUSCAR</button>');
-
                 $('#Mensual').hide();
                 $('#Quincenal').hide();
-                $('#Semanal').show();
+                $('#Rango').show();
             }
         });
 
         //SELECCIONA AÑO
-        $(document).on('change', '#year_reporte', function() {
+        $(document).on('change', '#year_reporte', function () {
             let selected = $(this).val();
             let mes_actual = 12;
             let date = new Date();
@@ -182,7 +190,7 @@
             }, {
                 id: '12',
                 name: 'Diciembre'
-            }, ];
+            },];
 
             if (year_actual == selected) {
                 mes_actual = date.getMonth() + 1;
@@ -197,10 +205,8 @@
             });
         });
 
-
-
         //BUSCAR POR AÑO
-        $(document).on('click', '.year_search', function() {
+        $(document).on('click', '.year_search', function () {
             let year = $('#year_reporte').val();
             let mes = $('#mes_reporte').val();
             if (year == "") {
@@ -213,10 +219,10 @@
                         mes: mes,
                     },
                     type: 'post',
-                    beforeSend: function() {
+                    beforeSend: function () {
                         $('.year_search').prop('disabled', true);
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.response) {
                             datatable.clear().draw();
                             addRowDatable(response.data);
@@ -226,7 +232,7 @@
                             alertify.error('Ocurrio un error.');
                         }
                     },
-                    error: function(x, xs, xt) {
+                    error: function (x, xs, xt) {
                         console.log(x);
                         alertify.error('Ocurrio un error.');
                         $('..year_search').prop('disabled', false);
@@ -242,10 +248,10 @@
             type: 'post',
             processData: false,
             contentType: false,
-            beforeSend: function() {
+            beforeSend: function () {
                 $('.year_search').prop('disabled', true);
             },
-            success: function(response) {
+            success: function (response) {
                 if (response.response) {
                     addRowDatable(response.data);
                 } else {
@@ -253,7 +259,7 @@
                     alertify.error('Ocurrio un error.');
                 }
             },
-            error: function(x, xs, xt) {
+            error: function (x, xs, xt) {
                 console.log(x);
                 alertify.error('Ocurrio un error.');
                 $('..year_search').prop('disabled', false);
@@ -261,63 +267,55 @@
         });
 
         function addRowDatable(data) {
-                data.forEach(r => {
-                let date = new Date(r.finalized_at);
-                const formatDate = (date) => {
-                    let formatted_date = date.getDate() + "-" + (date
-                            .getMonth() + 1) +
-                        "-" + date.getFullYear()
-                    return formatted_date;
-                }
+            data.forEach(r => {
                 datatable.row.add([
-                    formatDate(date),
+                    r.finalized_at,
                     r.name,
                     r.count,
-                    r.sum,
-                    '$ '+new Intl.NumberFormat("de-DE").format(r.total_amount),
+                    '$ ' + new Intl.NumberFormat("de-DE").format(r.total_amount),
                 ]).draw(false);
             });
             $(".loader").fadeOut("slow");
 
         };
         let idioma = {
-                "decimal": "",
-                "emptyTable": "No hay información",
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
-                "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
-                "infoFiltered": "(Filtrado de _MAX_ total entradas)",
-                "infoPostFix": "",
-                "thousands": ",",
-                "lengthMenu": "Mostrar _MENU_ Entradas",
-                "loadingRecords": "Cargando...",
-                "processing": "Procesando...",
-                "search": "Buscar:",
-                "zeroRecords": "Sin resultados encontrados",
-                "paginate": {
-                    "first": "Primero",
-                    "last": "Ultimo",
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
-            };
+            "decimal": "",
+            "emptyTable": "No hay información",
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+            "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+            "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ Entradas",
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "search": "Buscar:",
+            "zeroRecords": "Sin resultados encontrados",
+            "paginate": {
+                "first": "Primero",
+                "last": "Ultimo",
+                "next": "Siguiente",
+                "previous": "Anterior"
+            }
+        };
 
-            let datatable = $('#tbl_reports').DataTable({
-                responsive: true,
-                destroy: true,
-                dom: 'Bfrtip',
-                buttons: [
-                    'excelHtml5',
-                    'pdfHtml5'
-                ],
-                language: idioma,
-            });
+        let datatable = $('#tbl_reports').DataTable({
+            responsive: true,
+            destroy: true,
+            dom: 'Bfrtip',
+            buttons: [
+                'excelHtml5',
+                'pdfHtml5'
+            ],
+            language: idioma,
+        });
 
         //BUSCAR POR MES
-        $(document).on('click', '.mes_search', function() {
+        $(document).on('click', '.mes_search', function () {
             let year = $('#year_reporte').val();
             let mes = $('#mes_reporte').val();
             let quincena = $('#quincena_reporte').val();
-            
+
             if (year == "") {
                 alertify.error('Seleccione un año');
             } else if (mes == "") {
@@ -333,10 +331,10 @@
                         quincena: quincena,
                     },
                     type: 'post',
-                    beforeSend: function() {
+                    beforeSend: function () {
                         $('.year_search').prop('disabled', true);
                     },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.response) {
                             datatable.clear().draw();
                             addRowDatable(response.data);
@@ -346,7 +344,7 @@
                             alertify.error('Ocurrio un error.');
                         }
                     },
-                    error: function(x, xs, xt) {
+                    error: function (x, xs, xt) {
                         console.log(x);
                         alertify.error('Ocurrio un error.');
                         $('..year_search').prop('disabled', false);
@@ -355,8 +353,33 @@
             }
         });
 
-        //BUSCAR POR SEMANA
-        $(document).on('click', '.semana_search', function() {});
+        //BUSCAR POR RANGO
+        function rango(inicio, fin) {
+            let vinicio = inicio;
+            let vfin = fin;
+            $.ajax({
+                url: "{{ route('range_search')}}",
+                data: {
+                    inicio: vinicio,
+                    fin: vfin,
+                },
+                type: 'post',
+                beforeSend: function () {
+                },
+                success: function (response) {
+                    if (response.response) {
+                        datatable.clear().draw();
+                        addRowDatable(response.data);
+                    } else {
+                        alertify.error('Ocurrio un error.');
+                    }
+                },
+                error: function (x, xs, xt) {
+                    alertify.error('Ocurrio un error.');
+                }
+            });
+
+        }
 
     });
 </script>

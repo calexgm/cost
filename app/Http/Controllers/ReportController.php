@@ -83,10 +83,9 @@ class ReportController extends Controller
 
             $sales = Sale::leftjoin('sold_products','sales.id','sold_products.sale_id')
             ->join('users','sales.user_id','users.id')
-            ->select('sales.finalized_at','users.name',DB::raw('SUM(sold_products.qty) as sum'), DB::raw('COUNT(sale_id) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
-            ->groupBy('users.name','sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
-            ,'sales.created_at','sales.updated_at')
-            ->orderBy('sales.created_at', 'desc')
+            ->select('sales.finalized_at','users.name',DB::raw('COUNT(sales.finalized_at) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->groupBy('sales.finalized_at', 'users.name')
+            ->orderBy('sales.finalized_at', 'desc')
             ->whereYear('sales.finalized_at', $year)
             ->whereMonth('sales.finalized_at', $mes)
             ->get();  
@@ -105,12 +104,16 @@ class ReportController extends Controller
 
     public function get_search(){
         try {
+            $year = date('Y');
+            $month = date('m');
+            
             $sales = Sale::leftjoin('sold_products','sales.id','sold_products.sale_id')
             ->join('users','sales.user_id','users.id')
-            ->select('sales.finalized_at','users.name',DB::raw('SUM(sold_products.qty) as sum'), DB::raw('COUNT(sale_id) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
-            ->groupBy('users.name','sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
-            ,'sales.created_at','sales.updated_at')
-            ->orderBy('sales.created_at', 'desc')
+            ->select('sales.finalized_at','users.name',DB::raw('COUNT(sales.finalized_at) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->groupBy('sales.finalized_at', 'users.name')
+            ->orderBy('sales.finalized_at', 'desc')
+            ->whereMonth('sales.finalized_at', $month)
+            ->whereYear('sales.finalized_at', $year)
             ->get();  
 
             return response()->json([
@@ -142,14 +145,39 @@ class ReportController extends Controller
 
             $sales = Sale::leftjoin('sold_products','sales.id','sold_products.sale_id')
             ->join('users','sales.user_id','users.id')
-            ->select('sales.finalized_at','users.name',DB::raw('SUM(sold_products.qty) as sum'), DB::raw('COUNT(sale_id) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
-            ->groupBy('users.name','sales.id','sales.user_id','sales.total_amount','sales.finalized_at'
-            ,'sales.created_at','sales.updated_at')
-            ->orderBy('sales.created_at', 'desc')
+            ->select('sales.finalized_at','users.name',DB::raw('COUNT(sales.finalized_at) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->groupBy('sales.finalized_at', 'users.name')
+            ->orderBy('sales.finalized_at', 'desc')
             ->whereDay('sales.finalized_at', '>=' ,$ini)
             ->whereDay('sales.finalized_at', '<=' ,$fin)
             ->whereYear('sales.finalized_at', $year)
             ->whereMonth('sales.finalized_at', $mes)
+            ->get();  
+
+            return response()->json([
+                'response' => true,
+                'data' => $sales
+            ]);
+        } catch (\Throwable $th) {
+            return $th;
+            return response()->json([
+                'response' => false,
+            ]);
+        }
+    }
+
+    public function range_search(Request $request){
+        try {
+            $inicio = $request->inicio;
+            $fin = $request->fin;
+
+            $sales = Sale::leftjoin('sold_products','sales.id','sold_products.sale_id')
+            ->join('users','sales.user_id','users.id')
+            ->select('sales.finalized_at','users.name',DB::raw('COUNT(sales.finalized_at) as count'), DB::raw('sum(sold_products.total_amount) as total_amount'))
+            ->groupBy('sales.finalized_at', 'users.name')
+            ->orderBy('sales.finalized_at', 'desc')
+            ->where('sales.finalized_at','>=', $inicio)
+            ->where('sales.finalized_at','<=',  $fin)
             ->get();  
 
             return response()->json([

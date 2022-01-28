@@ -51,6 +51,12 @@
                     <p>Ventas</p>
                 </a>
             </li>
+            <li id="h_vents">
+                <a href="{{ route('history_ventas') }}">
+                    <i class="nc-icon nc-money-coins"></i>
+                    <p>Historial de ventas</p>
+                </a>
+            </li>
             @if (auth()->user()->rol_id == 1)
             <li id="users">
                 <a href="/users">

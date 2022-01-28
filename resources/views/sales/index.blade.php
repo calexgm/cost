@@ -91,12 +91,7 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            $("#dashboard").removeClass("active");
-            $("#categories").removeClass("active");
-            $("#products").removeClass("active");
-            $("#vents").addClass("active");
-            $("#users").removeClass("active");
-            $("#repors").removeClass("active");
+            $("#h_vents").addClass("active");
         });
 
         $('.modal_add_sales').click(function() {
