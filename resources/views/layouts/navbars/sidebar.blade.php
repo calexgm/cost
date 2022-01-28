@@ -44,7 +44,6 @@
                 </a>
             </li>
             @endif
-            
             <li id="vents">
                 <a href="{{ route('ventas') }}">
                     <i class="nc-icon nc-money-coins"></i>
