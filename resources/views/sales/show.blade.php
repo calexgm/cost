@@ -190,6 +190,34 @@
             </div>
         </div>
     </div>
+    <!-- Medio de pago -->
+    <div class="modal fade" id="modal_metodo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Medio de pago</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mb-4">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col pl-4 pr-4">
+                                <img tittle="Targeta" data-id="{{ $sale->id }}" class="img_metodo" src="https://djlbeczu5ui58.cloudfront.net/wp-content/uploads/2019/03/16105807/como-anular-un-pago-con-tarjeta.jpg" alt="">
+                            </div>
+                            <div class="col pl-4 pr-4">
+                                <img tittle="Efectivo" data-id="{{ $sale->id }}" class="img_metodo" src="https://i0.wp.com/digitalpolicylaw.com/wp-content/uploads/2019/04/dplnews_efectivo_jb190419.jpg" alt="">
+                            </div>
+                            <div class="col pl-4 pr-4">
+                                <img tittle="QR" data-id="{{ $sale->id }}" class="img_metodo" src="https://www.widefense.com/app/uploads/2020/11/qr_img-1.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Modal Escan -->
     @if(!$sales->finalized_at || $mifecha < $sales->finalized_at && auth()->user()->rol_id)
     <div class="modal fade" id="openScann" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -555,8 +583,14 @@
         });
         //Funcion finalizar
         $('.btn_finalice').click(function() {
-            let idd = $(this).attr("data-id");
+            $('#modal_metodo').modal("show");
 
+            
+
+        });
+        //FINALIZAR VENTA
+        $(document).on('click', '.img_metodo' , function(){
+            let idd = $(this).attr("data-id");
             alertify.confirm('Eliminar', '¿Está segur@ de finalizar esta venta?', function() {
                 //OK
                 $.ajax({
@@ -588,8 +622,7 @@
             }, function() {
                 //Cancel
             });
-
-        });
+        })
         //añadir open
         $('.modal_add_open').click(function() {
             $('#openAddProduct').modal('show');

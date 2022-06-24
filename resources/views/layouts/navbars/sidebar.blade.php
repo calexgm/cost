@@ -61,7 +61,7 @@
             </li>
             @if (auth()->user()->rol_id == 1)
             <li id="users">
-                <a href="/users">
+                <a href="{{ route('users') }}">
                     <i class="nc-icon nc-badge"></i>
                     <p>Usuarios</p>
                 </a>
@@ -77,3 +77,16 @@
         </ul>
     </div>
 </div>
+<script>
+    $(document).ready(function () {
+        $('.modal_add_sales').click(function() {
+            $('.modal_add_sales').prop('disabled', true);
+            $('.modal_add_sales').empty();
+            $('.modal_add_sales').append(
+                '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Cargando...'
+            );
+
+            document.form_create.submit();
+        });
+    })
+</script>

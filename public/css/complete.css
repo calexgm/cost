@@ -58,11 +58,10 @@
     width: 90px;
     height: 90px;
     margin: 2px 0px 0px 5px;
-    border-radius: 10px;
+    border-radius: 30px;
 }
 
 #preview_image_edit {
-    /*display: none;*/
     width: 90px;
     height: 90px;
     margin: 2px 0px 0px 5px;
@@ -144,4 +143,8 @@
 
 .table-style>tbody>tr {
     height: 15px !important;
+}
+.img_metodo{
+    width: 160px;
+    height: 120px;
 }

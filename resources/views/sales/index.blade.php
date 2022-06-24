@@ -88,14 +88,6 @@
             $("#h_vents").addClass("active");
         });
 
-        $('.modal_add_sales').click(function() {
-            $('.modal_add_sales').prop('disabled', true);
-            $('.modal_add_sales').empty();
-            $('.modal_add_sales').append(
-                '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Cargando...'
-            );
-
-            document.form_create.submit();
-        });
+        
     </script>
 @endpush

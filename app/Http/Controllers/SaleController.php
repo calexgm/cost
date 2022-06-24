@@ -78,6 +78,9 @@ class SaleController extends Controller
         'products.stock','products.status','products.id','products.description', 'products.image')
         ->get();
         //detalle
+        $update = Sale::where('id' , $sale->id)->update([
+            'finalized_at' => null
+        ]);
         $sales = Sale::select(DB::raw('DATE_ADD(sales.finalized_at, INTERVAL 30 MINUTE) as finalized_at'))
         ->where('sales.id', $sale->id)
         ->first();

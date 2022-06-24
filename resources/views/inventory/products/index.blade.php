@@ -761,42 +761,42 @@
                 formData.append('categoria', categoria);
                 formData.append('descripcion', descripcion);
                 
-                $.ajax({
-                    url: 'update_product',
-                    data: formData,
-                    type: 'post',
-                    processData: false,
-                    contentType: false,
-                    beforeSend: function() {
-                        $('.btn_update_product').prop('disabled', true);
-                        $('.btn_update_product').empty();
-                        $('.btn_update_product').append(
-                            '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Cargando...'
-                        );
-                    },
-                    success: function(response) {
+                // $.ajax({
+                //     url: 'update_product',
+                //     data: formData,
+                //     type: 'post',
+                //     processData: false,
+                //     contentType: false,
+                //     beforeSend: function() {
+                //         $('.btn_update_product').prop('disabled', true);
+                //         $('.btn_update_product').empty();
+                //         $('.btn_update_product').append(
+                //             '<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> Cargando...'
+                //         );
+                //     },
+                //     success: function(response) {
 
-                        if (response.response) {
-                            alertify.success('Producto editado con exito.');
-                            setTimeout(() => {
-                                location.reload();
-                            }, 2000);
-                        } else {
-                            $('.btn_update_product').prop('disabled', false);
-                            $('.btn_update_product').empty();
-                            $('.btn_update_product').append('Editar');
-                            alertify.error('Ocurrio un error al editar el producto.');
-                        }
-                    },
-                    error: function(x, xs, xt) {
-                        console.log(x);
-                        alertify.error('Ocurrio un error.');
-                        $('.btn_update_product').prop('disabled', false);
-                            $('.btn_update_product').empty();
-                            $('.btn_update_product').append('Editar');
-                            alertify.error('Ocurrio un error al editar el producto.');
-                    }
-                });
+                //         if (response.response) {
+                //             alertify.success('Producto editado con exito.');
+                //             setTimeout(() => {
+                //                 location.reload();
+                //             }, 2000);
+                //         } else {
+                //             $('.btn_update_product').prop('disabled', false);
+                //             $('.btn_update_product').empty();
+                //             $('.btn_update_product').append('Editar');
+                //             alertify.error('Ocurrio un error al editar el producto.');
+                //         }
+                //     },
+                //     error: function(x, xs, xt) {
+                //         console.log(x);
+                //         alertify.error('Ocurrio un error.');
+                //         $('.btn_update_product').prop('disabled', false);
+                //             $('.btn_update_product').empty();
+                //             $('.btn_update_product').append('Editar');
+                //             alertify.error('Ocurrio un error al editar el producto.');
+                //     }
+                // });
             }
 
         });
